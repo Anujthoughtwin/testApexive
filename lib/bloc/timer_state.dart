@@ -1,6 +1,12 @@
- class TimerState{}
+class TimerState {}
 
-class SampleState extends TimerState{
+class ProjectState extends TimerState {
+  String? selectedProject;
 
-  SampleState();
+  ProjectState({this.selectedProject});
+}
+class TaskState extends TimerState {
+  String? selectedTask;
+
+  TaskState({this.selectedTask});
 }

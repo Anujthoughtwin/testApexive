@@ -8,8 +8,11 @@ class TimerBloc extends Bloc<TimerEvent,TimerState>{
   final Repository repository = Repository();
 
   TimerBloc():super(TimerState()){
-    on<SampleEvent>((event, emit) {
-      emit(SampleState());
+    on<ProjectEvent>((event, emit) {
+      emit(ProjectState(selectedProject: event.selectedProject));
+    });
+    on<TaskEvent>((event, emit) {
+      emit(TaskState(selectedTask: event.selectedTask));
     });
   }
 }

@@ -1,6 +1,11 @@
 abstract class TimerEvent{}
 
-class SampleEvent extends TimerEvent{
+class ProjectEvent extends TimerEvent{
+ String? selectedProject;
+ ProjectEvent({this.selectedProject});
+}
 
- SampleEvent();
+class TaskEvent extends TimerEvent{
+ String? selectedTask;
+ TaskEvent({this.selectedTask});
 }

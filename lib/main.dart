@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:test_apexive/bloc/timer_bloc.dart';
 import 'package:test_apexive/create_timer.dart';
 
+import 'bloc/timer_state.dart';
+
 void main() {
-  runApp(const MyApp());
+  runApp( MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
+   MyApp({super.key});
+  TimerBloc timerBloc = TimerBloc();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -16,10 +19,17 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.transparent,
         appBarTheme: const AppBarTheme(
           backgroundColor:
-              Colors.transparent, // Set the background color for AppBar
+              Colors.transparent,
         ),
       ),
-      home: CreateTimer(),
+      home:BlocProvider(
+        create: (_) => timerBloc,
+        child: BlocConsumer<TimerBloc, TimerState>(
+          builder: (context, state) {
+            return CreateTimer(timerBloc: timerBloc,);
+          }, listener: (BuildContext context, TimerState state) {  },
+        ),
+      ),
     );
   }
 }
