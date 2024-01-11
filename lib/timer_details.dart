@@ -1,12 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'models/timer_model.dart';
 
+// ignore: must_be_immutable
 class TimerDetailsPage extends StatefulWidget {
   TimerModel? timerList;
 
-   TimerDetailsPage({super.key,this.timerList});
+  TimerDetailsPage({super.key, this.timerList});
 
   @override
   State<TimerDetailsPage> createState() => _TimerDetailsPageState();
@@ -61,9 +64,10 @@ class _TimerDetailsPageState extends State<TimerDetailsPage>
               actions: [
                 IconButton(onPressed: () {}, icon: const Icon(Icons.edit))
               ]),
-          body: TabBarView(
-              controller: _controller,
-              children:  [TimeSheetTab(timerList: widget.timerList), DetailsTab()]),
+          body: TabBarView(controller: _controller, children: [
+            TimeSheetTab(timerList: widget.timerList),
+            DetailsTab()
+          ]),
         ),
       ),
     );
@@ -215,19 +219,69 @@ class DetailsTab extends StatelessWidget {
   }
 }
 
-class TimeSheetTab extends StatelessWidget {
+class TimeSheetTab extends StatefulWidget {
   TimerModel? timerList;
 
-   TimeSheetTab({
-    super.key,
-    this.timerList
-  });
+  TimeSheetTab({super.key, this.timerList});
+
+  @override
+  State<TimeSheetTab> createState() => _TimeSheetTabState();
+}
+
+class _TimeSheetTabState extends State<TimeSheetTab> {
+  late Timer timers;
+  int days = 0;
+  int hours = 0;
+  int minutes = 0;
+  int seconds = 0;
+  bool isPlay = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    timers = Timer.periodic(const Duration(seconds: 1), (timer) {
+      var timerList = widget.timerList;
+
+      DateTime createdAt = timerList?.createdAt ?? DateTime.now();
+      print(createdAt);
+      setState(() {
+        DateTime a = DateTime(createdAt.year, createdAt.month, createdAt.day,
+            createdAt.hour, createdAt.second);
+        DateTime b = DateTime.now();
+        Duration difference = b.difference(a);
+        days = difference.inDays;
+        hours = difference.inHours % 24;
+        minutes = difference.inMinutes % 60;
+        seconds = difference.inSeconds % 60;
+      });
+    });
+  }
+
+  void playNewTimer() {
+    timers = Timer.periodic(const Duration(seconds: 1), (timer) {
+      var timerList = widget.timerList;
+
+      DateTime createdAt = timerList?.createdAt ?? DateTime.now();
+      print(createdAt);
+      setState(() {
+        DateTime a = DateTime(createdAt.year, createdAt.month, createdAt.day,
+            createdAt.hour, createdAt.second);
+        DateTime b = DateTime.now();
+        Duration difference = b.difference(a);
+        days = difference.inDays;
+        hours = difference.inHours % 24;
+        minutes = difference.inMinutes % 60;
+        seconds = difference.inSeconds % 60;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    DateTime date = timerList?.createdAt??DateTime.now();
+    DateTime date = widget.timerList?.createdAt ?? DateTime.now();
     String time = "${date.hour}:${date.minute}:${date.second}";
-    var dateFormatted = DateFormat("dd/mm/yyyy").format(date);
+    var dateFormatted = DateFormat("dd/MM/yyyy").format(date);
     var day = DateFormat('EEEE').format(date);
     return ListView(
       children: [
@@ -241,9 +295,9 @@ class TimeSheetTab extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-               Text(
+              Text(
                 day,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                   fontFamily: 'Inter',
@@ -252,9 +306,9 @@ class TimeSheetTab extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-               Text(
+              Text(
                 dateFormatted,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
                   fontFamily: 'Inter',
@@ -263,9 +317,9 @@ class TimeSheetTab extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-               Text(
-                'Start Time ${time}',
-                style: TextStyle(
+              Text(
+                'Start Time $time',
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                   fontFamily: 'Inter',
@@ -273,12 +327,11 @@ class TimeSheetTab extends StatelessWidget {
                   letterSpacing: 0.40,
                 ),
               ),
-
               Row(
                 children: [
-                  const Text(
-                    '08:08:20',
-                    style: TextStyle(
+                  Text(
+                    '$days:$hours:$minutes:$seconds',
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 36,
                       fontFamily: 'Inter',
@@ -293,20 +346,28 @@ class TimeSheetTab extends StatelessWidget {
                         size: 48,
                       )),
                   IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.play_circle,
+                      onPressed: () {
+                        setState(() {
+                          if (isPlay == true) {
+                            isPlay = false;
+                            timers.cancel();
+                          } else {
+                            isPlay = true;
+                            playNewTimer();
+                          }
+                        });
+                      },
+                      icon: Icon(
+                        isPlay ? Icons.pause_circle : Icons.play_circle,
                         size: 48,
                       ))
                 ],
               ),
-
               const SizedBox(height: 16),
               const Divider(
                 color: Colors.white,
               ),
               const SizedBox(height: 16),
-
               const Text(
                 'Description',
                 style: TextStyle(
@@ -319,8 +380,8 @@ class TimeSheetTab extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 4),
-               Text(
-                timerList?.description??"",
+              Text(
+                widget.timerList?.description ?? "",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 14,

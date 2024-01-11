@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_apexive/bloc/timer_event.dart';
+import 'package:test_apexive/create_timer.dart';
 import 'package:test_apexive/timer_details.dart';
 
 import 'bloc/timer_bloc.dart';
@@ -18,7 +21,7 @@ class TimeSheetPage extends StatefulWidget {
 
 class _TimeSheetPageState extends State<TimeSheetPage> {
   List<TimerModel>? timerList = [];
-
+  TimerBloc timerBloc = TimerBloc();
   @override
   void initState() {
     widget.timerBloc?.add(GetTimerListEvent());
@@ -52,29 +55,46 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                   children: [
                     Row(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           width: 20,
                         ),
-                        Text(
+                        const Text(
                           "Time Sheet",
                           style: TextStyle(fontSize: 28),
                         ),
-                        Spacer(),
-                            IconButton(
-                                onPressed: () {},
-                                icon: const Icon(
-                                  Icons.upcoming,
-                                  size: 40,
-                                )),
-                            IconButton(
-                                onPressed: () {},
-                                icon: const Icon(
-                                  Icons.add_box,
-                                  size: 40,
-                                ))
+                        const Spacer(),
+
+                        Image.asset("assets/up-Down-Arrow.png"),
+                        const SizedBox(
+                          width: 4,
+                        ),
+                        GestureDetector(
+                          onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    CreateTimer(timerBloc: timerBloc),
+                              )),
+                          child: Image.asset("assets/add.png"),
+                        ),
+                        const SizedBox(
+                          width: 16,
+                        ),
+                        // IconButton(
+                        //     onPressed: () {},
+                        //     icon: const Icon(
+                        //       Icons.upcoming,
+                        //       size: 40,
+                        //     )),
+                        // IconButton(
+                        //     onPressed: () {},
+                        //     icon: const Icon(
+                        //       Icons.add_box,
+                        //       size: 40,
+                        //     ))
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     Expanded(
@@ -107,10 +127,43 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
   }
 }
 
-class ListViewCell extends StatelessWidget {
+// ignore: must_be_immutable
+class ListViewCell extends StatefulWidget {
   TimerModel? timerList;
 
   ListViewCell({super.key, this.timerList});
+
+  @override
+  State<ListViewCell> createState() => _ListViewCellState();
+}
+
+class _ListViewCellState extends State<ListViewCell> {
+  int days = 0;
+  int hours = 0;
+  int minutes = 0;
+  int seconds = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      var timerList = widget.timerList;
+
+      DateTime createdAt = timerList?.createdAt ?? DateTime.now();
+      print(createdAt);
+      setState(() {
+        DateTime a = DateTime(createdAt.year, createdAt.month, createdAt.day,
+            createdAt.hour, createdAt.second);
+        DateTime b = DateTime.now();
+        Duration difference = b.difference(a);
+        days = difference.inDays;
+        hours = difference.inHours % 24;
+        minutes = difference.inMinutes % 60;
+        seconds = difference.inSeconds % 60;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +184,7 @@ class ListViewCell extends StatelessWidget {
             width: 2,
             height: 80,
             decoration: ShapeDecoration(
-              color: Color(0xFFFFC629),
+              color: const Color(0xFFFFC629),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8)),
             ),
@@ -148,8 +201,8 @@ class ListViewCell extends StatelessWidget {
                     width: 5,
                   ),
                   Text(
-                    timerList?.project ?? "",
-                    style: TextStyle(
+                    widget.timerList?.project ?? "",
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       fontFamily: 'Inter',
@@ -166,8 +219,8 @@ class ListViewCell extends StatelessWidget {
                     width: 5,
                   ),
                   Text(
-                    timerList?.task ?? "",
-                    style: TextStyle(
+                    widget.timerList?.task ?? "",
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,
                       fontFamily: 'Inter',
@@ -210,10 +263,10 @@ class ListViewCell extends StatelessWidget {
             child: Center(
               child: Row(
                 children: [
-                  const Text(
-                    '00:30',
+                  Text(
+                    '$days:$hours:$minutes:$seconds',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                       fontSize: 14,
                       fontFamily: 'Inter',
@@ -222,7 +275,8 @@ class ListViewCell extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 4),
-                  IconButton(onPressed: () {}, icon: Icon(Icons.play_circle))
+                  IconButton(
+                      onPressed: () {}, icon: const Icon(Icons.play_circle))
                 ],
               ),
             ),
