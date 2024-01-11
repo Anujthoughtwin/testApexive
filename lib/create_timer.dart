@@ -22,6 +22,7 @@ class _CreateTimerState extends State<CreateTimer> {
   List<String> project = ["IOS", "ANDROID", "FLUTTER", "REACT NATIVE"];
   List<String> task = ["AUTH", "PAYMENT", "SETTINGS", "USER PROFILE"];
   TextEditingController descController = TextEditingController();
+  bool? check;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +39,8 @@ class _CreateTimerState extends State<CreateTimer> {
               MaterialPageRoute(
                 builder: (context) => TimeSheetPage(timerBloc: widget.timerBloc),
               ));
+        }else if(state is IsCheckedState){
+          check = state.isChecked;
         }
       },
       child: BlocBuilder<TimerBloc, TimerState>(
@@ -127,7 +130,6 @@ class _CreateTimerState extends State<CreateTimer> {
                               'Task',
                               style: TextStyle(fontSize: 18),
                             ),
-                            // Not necessary for Option 1
                             value: _selectedTask,
                             onChanged: (newValue) {
                               widget.timerBloc
@@ -160,12 +162,28 @@ class _CreateTimerState extends State<CreateTimer> {
                             borderRadius: BorderRadius.circular(12.0),
                             borderSide: const BorderSide(
                               width: 4,
-                              color: Colors.grey, // Set the border color here
+                              color: Colors.grey,
                             ),
                           ),
                         ),
                         maxLines:
-                            null, // Allows the text field to expand vertically as needed
+                            null,
+                      ),
+                      SizedBox(height: 30,),
+                      Row(
+                        children: [
+                          Checkbox(
+                            onChanged: (val) {
+                               widget.timerBloc?.add(IsCheckedEvent(isChecked: val));
+                            },
+                            value: check ?? false,
+                            checkColor: Colors.white,
+                            activeColor: Colors.grey,
+
+                          ),
+                          SizedBox(width: 10,),
+                          Text("Make Favorite",style: TextStyle(fontSize: 18),)
+                        ],
                       ),
                       const Spacer(),
                       GestureDetector(
@@ -174,7 +192,7 @@ class _CreateTimerState extends State<CreateTimer> {
                               timerModel: TimerModel(
                                   description: descController.text,
                                   project: _selectedProject,
-                                  task: _selectedTask)));
+                                  task: _selectedTask,createdAt: DateTime.now())));
                         },
                         child: Container(
                           height: 48,
