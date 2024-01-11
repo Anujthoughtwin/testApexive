@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_apexive/bloc/timer_event.dart';
+import 'package:test_apexive/create_timer.dart';
 import 'package:test_apexive/timer_details.dart';
 
 import 'bloc/timer_bloc.dart';
@@ -18,6 +21,7 @@ class TimeSheetPage extends StatefulWidget {
 
 class _TimeSheetPageState extends State<TimeSheetPage> {
   List<TimerModel>? timerList = [];
+  TimerBloc timerBloc = TimerBloc();
 
   @override
   void initState() {
@@ -52,29 +56,47 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                   children: [
                     Row(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           width: 20,
                         ),
-                        Text(
+                        const Text(
                           "Time Sheet",
                           style: TextStyle(fontSize: 28),
                         ),
-                        Spacer(),
-                            IconButton(
-                                onPressed: () {},
-                                icon: const Icon(
-                                  Icons.upcoming,
-                                  size: 40,
-                                )),
-                            IconButton(
-                                onPressed: () {},
-                                icon: const Icon(
-                                  Icons.add_box,
-                                  size: 40,
-                                ))
+                        const Spacer(),
+
+                        Image.asset("assets/up-Down-Arrow.png"),
+                        const SizedBox(
+                          width: 4,
+                        ),
+                        GestureDetector(
+                          onTap: () =>
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        CreateTimer(timerBloc: timerBloc),
+                                  )),
+                          child: Image.asset("assets/add.png"),
+                        ),
+                        const SizedBox(
+                          width: 16,
+                        ),
+                        // IconButton(
+                        //     onPressed: () {},
+                        //     icon: const Icon(
+                        //       Icons.upcoming,
+                        //       size: 40,
+                        //     )),
+                        // IconButton(
+                        //     onPressed: () {},
+                        //     icon: const Icon(
+                        //       Icons.add_box,
+                        //       size: 40,
+                        //     ))
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     Expanded(
@@ -87,11 +109,12 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => TimerDetailsPage(
-                                        timerList: timerList?[index]),
+                                    builder: (context) =>
+                                        TimerDetailsPage(
+                                            timerList: timerList?[index],timerBloc: widget.timerBloc),
                                   ));
                             },
-                            child: ListViewCell(timerList: timerList?[index]),
+                            child: ListViewCell(timerList: timerList?[index],timerBloc: widget.timerBloc),
                           );
                         },
                       ),
@@ -107,127 +130,171 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
   }
 }
 
-class ListViewCell extends StatelessWidget {
+// ignore: must_be_immutable
+class ListViewCell extends StatefulWidget {
   TimerModel? timerList;
+  TimerBloc? timerBloc;
 
-  ListViewCell({super.key, this.timerList});
+  ListViewCell({super.key, this.timerList, this.timerBloc});
+
+  @override
+  State<ListViewCell> createState() => _ListViewCellState();
+}
+
+class _ListViewCellState extends State<ListViewCell> {
+  int days = 0;
+  int hours = 0;
+  int minutes = 0;
+  int seconds = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      var timerList = widget.timerList;
+
+      DateTime createdAt = timerList?.createdAt ?? DateTime.now();
+      print(createdAt);
+      widget.timerBloc?.add(TimingEvent(createdAt: createdAt));
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 112,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(16),
-      decoration: ShapeDecoration(
-        color: Colors.white.withOpacity(0.07),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            width: 2,
-            height: 80,
+    return BlocListener<TimerBloc, TimerState>(
+      bloc: widget.timerBloc,
+      listener: (context, state) {
+        if (state is TimingState) {
+          days = state.difference?.inDays ?? 0;
+          hours = (state.difference?.inHours ?? 0) % 24;
+          minutes = (state.difference?.inMinutes ?? 0) % 60;
+          seconds = (state.difference?.inSeconds ?? 0) % 60;
+        }
+      },
+      child: BlocBuilder<TimerBloc, TimerState>(
+        bloc: widget.timerBloc,
+        builder: (context, state) {
+          return Container(
+            height: 112,
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.all(16),
             decoration: ShapeDecoration(
-              color: Color(0xFFFFC629),
+              color: Colors.white.withOpacity(0.07),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-            ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Icon(Icons.star),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    timerList?.project ?? "",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.15,
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  const Icon(Icons.cases_outlined),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    timerList?.task ?? "",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w400,
-                      letterSpacing: 0.25,
-                    ),
-                  ),
-                ],
-              ),
-              const Row(
-                children: [
-                  Icon(Icons.timer),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    'Deadline 07/20/2023',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w400,
-                      letterSpacing: 0.25,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          Container(
-            height: 48,
-            padding:
-                const EdgeInsets.only(top: 8, left: 16, right: 8, bottom: 8),
-            decoration: ShapeDecoration(
-              color: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(64),
+                borderRadius: BorderRadius.circular(16),
               ),
             ),
-            child: Center(
-              child: Row(
-                children: [
-                  const Text(
-                    '00:30',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 0.10,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: 2,
+                  height: 80,
+                  decoration: ShapeDecoration(
+                    color: const Color(0xFFFFC629),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                  ),
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Icon(Icons.star),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          widget.timerList?.project ?? "",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.15,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Icon(Icons.cases_outlined),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          widget.timerList?.task ?? "",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: 0.25,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Row(
+                      children: [
+                        Icon(Icons.timer),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          'Deadline 07/20/2023',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: 0.25,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Container(
+                  height: 48,
+                  padding:
+                  const EdgeInsets.only(top: 8, left: 16, right: 8, bottom: 8),
+                  decoration: ShapeDecoration(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(64),
                     ),
                   ),
-                  const SizedBox(width: 4),
-                  IconButton(onPressed: () {}, icon: Icon(Icons.play_circle))
-                ],
-              ),
+                  child: Center(
+                    child: Row(
+                      children: [
+                        Text(
+                          '$days:$hours:$minutes:$seconds',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 0.10,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        IconButton(
+                            onPressed: () {}, icon: const Icon(
+                            Icons.play_circle))
+                      ],
+                    ),
+                  ),
+                )
+              ],
             ),
-          )
-        ],
+          );
+        },
       ),
     );
   }

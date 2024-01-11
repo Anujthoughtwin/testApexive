@@ -1,30 +1,43 @@
 import '../models/timer_model.dart';
 
-abstract class TimerEvent{}
+abstract class TimerEvent {}
 
-class ProjectEvent extends TimerEvent{
- String? selectedProject;
- ProjectEvent({this.selectedProject});
+class ProjectEvent extends TimerEvent {
+  String? selectedProject;
+
+  ProjectEvent({this.selectedProject});
 }
 
-class TaskEvent extends TimerEvent{
- String? selectedTask;
- TaskEvent({this.selectedTask});
+class TaskEvent extends TimerEvent {
+  String? selectedTask;
+
+  TaskEvent({this.selectedTask});
 }
 
 class CreateTimerEvent extends TimerEvent {
- TimerModel? timerModel;
+  TimerModel? timerModel;
 
- CreateTimerEvent({this.timerModel});
+  CreateTimerEvent({this.timerModel});
 }
 
 class GetTimerListEvent extends TimerEvent {
-
- GetTimerListEvent();
+  GetTimerListEvent();
 }
 
-class IsCheckedEvent extends TimerEvent{
- bool? isChecked;
+class IsCheckedEvent extends TimerEvent {
+  bool? isChecked;
 
- IsCheckedEvent({this.isChecked});
+  IsCheckedEvent({this.isChecked});
+}
+
+class IsPlayEvent extends TimerEvent {
+  bool? isPlay;
+
+  IsPlayEvent({this.isPlay});
+}
+
+class TimingEvent extends TimerEvent {
+  DateTime? createdAt;
+
+  TimingEvent({this.createdAt});
 }
