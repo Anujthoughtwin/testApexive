@@ -26,6 +26,16 @@ class TimerBloc extends Bloc<TimerEvent,TimerState>{
     on<IsCheckedEvent>((event, emit) {
       emit(IsCheckedState(isChecked: event.isChecked));
     });
+    on<IsPlayEvent>((event, emit) {
+      emit(IsPlayState(isPlay: event.isPlay));
+    });
+    on<TimingEvent>((event, emit) {
+      DateTime a = DateTime(event.createdAt?.year??0, event.createdAt?.month??0, event.createdAt?.day??0,
+          event.createdAt?.hour??0, event.createdAt?.second??0);
+      DateTime b = DateTime.now();
+      Duration difference = b.difference(a);
+      emit(TimingState(difference: difference));
+    });
   }
 }
 

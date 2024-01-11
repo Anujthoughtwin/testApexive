@@ -28,3 +28,13 @@ class IsCheckedState extends TimerState{
 
   IsCheckedState({this.isChecked});
 }
+class IsPlayState extends TimerState{
+  bool? isPlay;
+
+  IsPlayState({this.isPlay});
+}
+
+class TimingState extends TimerState{
+  Duration? difference;
+  TimingState({this.difference});
+}

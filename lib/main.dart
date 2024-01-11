@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         create: (_) => timerBloc,
         child: BlocConsumer<TimerBloc, TimerState>(
           builder: (context, state) {
-            return TimeSheetPage();
+            return CreateTimer(timerBloc: timerBloc,);
           }, listener: (BuildContext context, TimerState state) {  },
         ),
       ),
