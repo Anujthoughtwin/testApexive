@@ -6,7 +6,7 @@ class Repository {
 
   Future<List<TimerModel>> getAllTodos() => dbController.getAllTODOS();
 
-  Future insertTodo(TimerModel? todo) => dbController.createTODO(todo);
+  Future<int> insertTodo(TimerModel? todo) => dbController.createTODO(todo);
 
   Future updateTodo(TimerModel? todo) => dbController.updateTODO(todo);
 

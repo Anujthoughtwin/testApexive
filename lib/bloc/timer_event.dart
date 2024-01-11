@@ -1,3 +1,5 @@
+import '../models/timer_model.dart';
+
 abstract class TimerEvent{}
 
 class ProjectEvent extends TimerEvent{
@@ -8,4 +10,15 @@ class ProjectEvent extends TimerEvent{
 class TaskEvent extends TimerEvent{
  String? selectedTask;
  TaskEvent({this.selectedTask});
+}
+
+class CreateTimerEvent extends TimerEvent {
+ TimerModel? timerModel;
+
+ CreateTimerEvent({this.timerModel});
+}
+
+class GetTimerListEvent extends TimerEvent {
+
+ GetTimerListEvent();
 }

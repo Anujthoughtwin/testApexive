@@ -1,70 +1,100 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:test_apexive/bloc/timer_event.dart';
 import 'package:test_apexive/timer_details.dart';
 
+import 'bloc/timer_bloc.dart';
+import 'bloc/timer_state.dart';
+import 'models/timer_model.dart';
+
 class TimeSheetPage extends StatefulWidget {
-  const TimeSheetPage({super.key});
+  TimerBloc? timerBloc;
+
+  TimeSheetPage({super.key, this.timerBloc});
 
   @override
   State<TimeSheetPage> createState() => _TimeSheetPageState();
 }
 
 class _TimeSheetPageState extends State<TimeSheetPage> {
-  // Default selected value
+  List<TimerModel>? timerList = [];
+
+  @override
+  void initState() {
+    widget.timerBloc?.add(GetTimerListEvent());
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment(-0.16, -0.99),
-          end: Alignment(0.16, 0.99),
-          colors: [Color(0xFF0C1D4D), Color(0xFF214ECC)],
-        ),
-      ),
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: const Text("Time Sheet"),
-          actions: [
-            IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.upcoming,
-                  size: 50,
-                )),
-            IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.add_box,
-                  size: 50,
-                ))
-          ],
-        ),
-        body: SafeArea(
-          child: ListView.builder(
-            itemCount: 100,
-            itemBuilder: (BuildContext context, int index) {
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const TimerDetailsPage(),
-                      ));
-                },
-                child: ListViewCell(),
-              );
-            },
-          ),
-        ),
+    return BlocListener<TimerBloc, TimerState>(
+      bloc: widget.timerBloc,
+      listener: (context, state) {
+        if (state is GetTimerListState) {
+          timerList?.addAll(state.timerModel ?? []);
+        }
+      },
+      child: BlocBuilder<TimerBloc, TimerState>(
+        bloc: widget.timerBloc,
+        builder: (context, state) {
+          return Container(
+            clipBehavior: Clip.antiAlias,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment(-0.16, -0.99),
+                end: Alignment(0.16, 0.99),
+                colors: [Color(0xFF0C1D4D), Color(0xFF214ECC)],
+              ),
+            ),
+            child: Scaffold(
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+                title: const Text("Time Sheet"),
+                actions: [
+                  IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.upcoming,
+                        size: 50,
+                      )),
+                  IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.add_box,
+                        size: 50,
+                      ))
+                ],
+              ),
+              body: SafeArea(
+                child: ListView.builder(
+                  itemCount: timerList?.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>  TimerDetailsPage(timerList: timerList?[index]),
+                            ));
+                      },
+                      child: ListViewCell(timerList: timerList?[index]),
+                    );
+                  },
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 }
 
 class ListViewCell extends StatelessWidget {
-  const ListViewCell({
+  TimerModel? timerList;
+   ListViewCell({
     super.key,
+    this.timerList
   });
 
   @override
@@ -91,19 +121,19 @@ class ListViewCell extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8)),
             ),
           ),
-          const Column(
+           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(Icons.star),
-                  SizedBox(
+                  const Icon(Icons.star),
+                  const SizedBox(
                     width: 5,
                   ),
                   Text(
-                    'iOS app deployment',
+                    timerList?.project??"",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -114,14 +144,14 @@ class ListViewCell extends StatelessWidget {
                   ),
                 ],
               ),
-              Row(
+               Row(
                 children: [
-                  Icon(Icons.cases_outlined),
-                  SizedBox(
+                  const Icon(Icons.cases_outlined),
+                  const SizedBox(
                     width: 5,
                   ),
                   Text(
-                    'SO056 - Booqio V2',
+                    timerList?.task??"",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
@@ -132,7 +162,7 @@ class ListViewCell extends StatelessWidget {
                   ),
                 ],
               ),
-              Row(
+              const Row(
                 children: [
                   Icon(Icons.timer),
                   SizedBox(
@@ -155,7 +185,7 @@ class ListViewCell extends StatelessWidget {
           Container(
             height: 48,
             padding:
-                const EdgeInsets.only(top: 8, left: 16, right: 8, bottom: 8),
+            const EdgeInsets.only(top: 8, left: 16, right: 8, bottom: 8),
             decoration: ShapeDecoration(
               color: Colors.white,
               shape: RoundedRectangleBorder(

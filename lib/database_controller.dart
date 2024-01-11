@@ -7,13 +7,13 @@ class DatabaseController{
 
   Future<int> createTODO(TimerModel? todo) async {
     final db = await dbClient.db;
-    int result = await db.insert("todoTable", todo!.toJSON());
+    int result = await db.insert("timerTable", todo!.toJSON());
     return result;
   }
 
   Future<List<TimerModel>> getAllTODOS({List<String>? columns}) async {
     final db = await dbClient.db;
-    var result = await db.query("todoTable",columns: columns);
+    var result = await db.query("timerTable",columns: columns);
     List<TimerModel> todos = result.isNotEmpty ? result.map((item) => TimerModel.fromJSON(item)).toList() : [];
     return todos;
   }

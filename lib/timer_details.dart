@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
+import 'models/timer_model.dart';
+
 class TimerDetailsPage extends StatefulWidget {
-  const TimerDetailsPage({super.key});
+  TimerModel? timerList;
+
+   TimerDetailsPage({super.key,this.timerList});
 
   @override
   State<TimerDetailsPage> createState() => _TimerDetailsPageState();
@@ -10,6 +14,7 @@ class TimerDetailsPage extends StatefulWidget {
 class _TimerDetailsPageState extends State<TimerDetailsPage>
     with SingleTickerProviderStateMixin {
   late TabController _controller;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -57,15 +62,15 @@ class _TimerDetailsPageState extends State<TimerDetailsPage>
               ]),
           body: TabBarView(
               controller: _controller,
-              children: const [TimeSheetTab(), detailsTab()]),
+              children: const [TimeSheetTab(), DetailsTab()]),
         ),
       ),
     );
   }
 }
 
-class detailsTab extends StatelessWidget {
-  const detailsTab({
+class DetailsTab extends StatelessWidget {
+  const DetailsTab({
     super.key,
   });
 
