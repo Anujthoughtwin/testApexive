@@ -25,7 +25,7 @@ class DatabaseProvider {
       version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(
-            '''CREATE TABLE todoTable (id INTEGER PRIMARY KEY, project TEXT, task TEXT, description TEXT, isFav BOOLEAN)''');
+            '''CREATE TABLE timerTable (id INTEGER PRIMARY KEY, project TEXT, task TEXT, description TEXT, isFav BOOLEAN)''');
       },
       onUpgrade: (Database db, int oldVersion, int newVersion) {
         if (newVersion > oldVersion) {}

@@ -4,9 +4,10 @@ class TimerModel {
   String? task;
   String? description;
   bool? isFav;
+  bool? isCompleted;
 
   TimerModel(
-      {this.id, this.project, this.task, this.description, this.isFav});
+      {this.id, this.project, this.task, this.description, this.isFav,this.isCompleted});
 
   factory TimerModel.fromJSON(Map<String, dynamic> json) {
     return TimerModel(
@@ -15,6 +16,7 @@ class TimerModel {
       task: json['task'],
       description: json['description'],
       isFav: json['isFav'],
+      isCompleted: json['isCompleted'],
     );
   }
 
@@ -25,6 +27,7 @@ class TimerModel {
       'task': task,
       'description': description,
       'isFav': isFav,
+      'isCompleted': isCompleted,
     };
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_apexive/bloc/timer_event.dart';
+import 'package:test_apexive/models/timer_model.dart';
 import 'package:test_apexive/time_sheet.dart';
 
 import 'bloc/timer_bloc.dart';
@@ -21,15 +22,22 @@ class _CreateTimerState extends State<CreateTimer> {
   List<String> project = ["IOS", "ANDROID", "FLUTTER", "REACT NATIVE"];
   List<String> task = ["AUTH", "PAYMENT", "SETTINGS", "USER PROFILE"];
   TextEditingController descController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<TimerBloc, TimerState>(
       bloc: widget.timerBloc,
       listener: (context, state) {
-        if(state is ProjectState){
+        if (state is ProjectState) {
           _selectedProject = state.selectedProject;
-        }else if(state is TaskState){
+        } else if (state is TaskState) {
           _selectedTask = state.selectedTask;
+        }else if(state is CreateTimerState){
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TimeSheetPage(timerBloc: widget.timerBloc),
+              ));
         }
       },
       child: BlocBuilder<TimerBloc, TimerState>(
@@ -84,7 +92,8 @@ class _CreateTimerState extends State<CreateTimer> {
                             ),
                             value: _selectedProject,
                             onChanged: (newValue) {
-                                widget.timerBloc?.add(ProjectEvent(selectedProject:newValue ));
+                              widget.timerBloc?.add(
+                                  ProjectEvent(selectedProject: newValue));
                             },
                             items: project.map((location) {
                               return DropdownMenuItem(
@@ -121,8 +130,8 @@ class _CreateTimerState extends State<CreateTimer> {
                             // Not necessary for Option 1
                             value: _selectedTask,
                             onChanged: (newValue) {
-                              widget.timerBloc?.add(TaskEvent(selectedTask:newValue ));
-
+                              widget.timerBloc
+                                  ?.add(TaskEvent(selectedTask: newValue));
                             },
                             items: task.map((location) {
                               return DropdownMenuItem(
@@ -156,16 +165,16 @@ class _CreateTimerState extends State<CreateTimer> {
                           ),
                         ),
                         maxLines:
-                        null, // Allows the text field to expand vertically as needed
+                            null, // Allows the text field to expand vertically as needed
                       ),
                       const Spacer(),
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => TimeSheetPage(),
-                              ));
+                          widget.timerBloc?.add(CreateTimerEvent(
+                              timerModel: TimerModel(
+                                  description: descController.text,
+                                  project: _selectedProject,
+                                  task: _selectedTask)));
                         },
                         child: Container(
                           height: 48,
