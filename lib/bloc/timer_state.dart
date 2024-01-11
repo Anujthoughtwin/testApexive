@@ -22,3 +22,9 @@ class GetTimerListState extends TimerState {
 
   GetTimerListState({this.timerModel});
 }
+
+class IsCheckedState extends TimerState{
+  bool? isChecked;
+
+  IsCheckedState({this.isChecked});
+}

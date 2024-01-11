@@ -23,6 +23,9 @@ class TimerBloc extends Bloc<TimerEvent,TimerState>{
       List<TimerModel> list = await repository.getAllTodos();
       emit(GetTimerListState(timerModel: list));
     });
+    on<IsCheckedEvent>((event, emit) {
+      emit(IsCheckedState(isChecked: event.isChecked));
+    });
   }
 }
 

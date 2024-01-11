@@ -47,39 +47,56 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
               ),
             ),
             child: Scaffold(
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                title: const Text("Time Sheet"),
-                actions: [
-                  IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.upcoming,
-                        size: 50,
-                      )),
-                  IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.add_box,
-                        size: 50,
-                      ))
-                ],
-              ),
               body: SafeArea(
-                child: ListView.builder(
-                  itemCount: timerList?.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>  TimerDetailsPage(timerList: timerList?[index]),
-                            ));
-                      },
-                      child: ListViewCell(timerList: timerList?[index]),
-                    );
-                  },
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                          "Time Sheet",
+                          style: TextStyle(fontSize: 28),
+                        ),
+                        Spacer(),
+                            IconButton(
+                                onPressed: () {},
+                                icon: const Icon(
+                                  Icons.upcoming,
+                                  size: 40,
+                                )),
+                            IconButton(
+                                onPressed: () {},
+                                icon: const Icon(
+                                  Icons.add_box,
+                                  size: 40,
+                                ))
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: timerList?.length,
+                        shrinkWrap: true,
+                        itemBuilder: (BuildContext context, int index) {
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => TimerDetailsPage(
+                                        timerList: timerList?[index]),
+                                  ));
+                            },
+                            child: ListViewCell(timerList: timerList?[index]),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -92,10 +109,8 @@ class _TimeSheetPageState extends State<TimeSheetPage> {
 
 class ListViewCell extends StatelessWidget {
   TimerModel? timerList;
-   ListViewCell({
-    super.key,
-    this.timerList
-  });
+
+  ListViewCell({super.key, this.timerList});
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +136,7 @@ class ListViewCell extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8)),
             ),
           ),
-           Column(
+          Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -133,7 +148,7 @@ class ListViewCell extends StatelessWidget {
                     width: 5,
                   ),
                   Text(
-                    timerList?.project??"",
+                    timerList?.project ?? "",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -144,14 +159,14 @@ class ListViewCell extends StatelessWidget {
                   ),
                 ],
               ),
-               Row(
+              Row(
                 children: [
                   const Icon(Icons.cases_outlined),
                   const SizedBox(
                     width: 5,
                   ),
                   Text(
-                    timerList?.task??"",
+                    timerList?.task ?? "",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
@@ -185,7 +200,7 @@ class ListViewCell extends StatelessWidget {
           Container(
             height: 48,
             padding:
-            const EdgeInsets.only(top: 8, left: 16, right: 8, bottom: 8),
+                const EdgeInsets.only(top: 8, left: 16, right: 8, bottom: 8),
             decoration: ShapeDecoration(
               color: Colors.white,
               shape: RoundedRectangleBorder(

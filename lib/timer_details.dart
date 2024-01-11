@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'models/timer_model.dart';
 
@@ -62,7 +63,7 @@ class _TimerDetailsPageState extends State<TimerDetailsPage>
               ]),
           body: TabBarView(
               controller: _controller,
-              children: const [TimeSheetTab(), DetailsTab()]),
+              children:  [TimeSheetTab(timerList: widget.timerList), DetailsTab()]),
         ),
       ),
     );
@@ -215,14 +216,20 @@ class DetailsTab extends StatelessWidget {
 }
 
 class TimeSheetTab extends StatelessWidget {
-  const TimeSheetTab({
+  TimerModel? timerList;
+
+   TimeSheetTab({
     super.key,
+    this.timerList
   });
 
   @override
   Widget build(BuildContext context) {
+    DateTime date = timerList?.createdAt??DateTime.now();
+    String time = "${date.hour}:${date.minute}:${date.second}";
+    var dateFormatted = DateFormat("dd/mm/yyyy").format(date);
+    var day = DateFormat('EEEE').format(date);
     return ListView(
-      // crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           margin: const EdgeInsets.all(16),
@@ -234,9 +241,8 @@ class TimeSheetTab extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              //
-              const Text(
-                'Monday ',
+               Text(
+                day,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
@@ -246,8 +252,8 @@ class TimeSheetTab extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                '10/11/2023',
+               Text(
+                dateFormatted,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -257,8 +263,8 @@ class TimeSheetTab extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'Start Time 10:00 ',
+               Text(
+                'Start Time ${time}',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 12,
@@ -313,8 +319,8 @@ class TimeSheetTab extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 4),
-              const Text(
-                'As a user, I would like to be able to buy a subscription, this would allow me to get a discount on the products and on the second stage of diagnosis',
+               Text(
+                timerList?.description??"",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 14,

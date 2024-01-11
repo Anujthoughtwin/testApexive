@@ -22,3 +22,9 @@ class GetTimerListEvent extends TimerEvent {
 
  GetTimerListEvent();
 }
+
+class IsCheckedEvent extends TimerEvent{
+ bool? isChecked;
+
+ IsCheckedEvent({this.isChecked});
+}
